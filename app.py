@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 import tensorflow as tf
 from tensorflow.python.saved_model import tag_constants
 from view import create_endpoints
@@ -9,6 +10,7 @@ class Services :
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    CORS(app)
 
     if test_config is None:
         app.config.from_pyfile('config.py')
