@@ -1,6 +1,8 @@
 import numpy as np
+import base64
 from service import bus_arrive, number_detection
 from flask import request, jsonify
+import tensorflow as tf
 
 def create_endpoints(app, services, infer):
     @app.route('/')
@@ -13,9 +15,14 @@ def create_endpoints(app, services, infer):
             payload = request.json
             target_bus = payload['bus']
             bus_station = payload['station']
-            image = payload['image'] # TODO image? path?
-            if (target_bus == '' or bus_station == '' or image == ''):
+            image_bytes = payload['image']
+            if (target_bus == '' or bus_station == '' or image_bytes == ''):
                 return jsonify({'error': 'No input data'})
+
+            image_path = 'bus.jpg'
+            image_data = base64.b64decode(image_bytes)
+            with open(image_path, 'wb') as f:
+                f.write(image_data)
             
             bus_dict = services.bus_arrive.get_bus_dict(bus_station)
             if target_bus not in bus_dict:
@@ -24,18 +31,18 @@ def create_endpoints(app, services, infer):
             target_color = bus_dict[target_bus]
             same_color, diff_color = services.utils.count_bus(bus_dict, target_color)
             
-            leftup, rightdown = services.yolo.yolo(infer, image)
+            leftup, rightdown = services.yolo.yolo(infer, image_path)
 
             if diff_color > 0:
-                detected_color = services.color_detection.detect_color(image, leftup=leftup, rightdown=rightdown)
+                detected_color = services.color_detection.detect_color(image_path, leftup=leftup, rightdown=rightdown)
                 if detected_color is not target_color:
                     return jsonify({'error': 'Unexpected color'})
             
-            if (same_color > 1 and services.number_detection.detect_number(image, target_bus, leftup, rightdown) == False):
+            if (same_color > 1 and services.number_detection.detect_number(image_path, target_bus, leftup, rightdown) == False):
                 return jsonify({'error': 'Unexpected number'})
             
-            door = services.door_detection.detect_door(image, leftup, rightdown)
-            radian = services.angle_detection.detect_angle(image)
+            door = services.door_detection.detect_door(image_path, leftup, rightdown)
+            radian = services.angle_detection.detect_angle(image_path)
 
             distance, angle = services.calculator.calculate_distance_angle(door, radian)
 
