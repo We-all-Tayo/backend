@@ -3,7 +3,7 @@ class Utils:
         same_color = 0
         diff_color = 0
 
-        for _, color in bus_dict.items():
+        for _, (color, _) in bus_dict.items():
             if color is target_color:
                 same_color += 1
             else:
