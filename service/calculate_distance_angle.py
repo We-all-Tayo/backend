@@ -8,6 +8,25 @@ REAL_WIDTH = 1970.0
 REAL_DIAGONAL = 2807.294070809113
 
 class Calculator:
+    def __init__(self):
+        # INIT from blue3.jpg
+        init_p1 = np.array((1949, 613))
+        init_p2 = np.array((3045, 645))
+        init_p3 = np.array((1880, 2649))
+        init_p4 = np.array((2984, 2695))
+        points = [init_p1, init_p2, init_p3, init_p4]
+        # print("INIT Points : ", points)
+
+        height = self.calculate_height(points)
+        width = self.calculate_width(points)
+        diagonal = self.calculate_diagonal(points)
+
+        # get alpha
+        alpha_width = (width * REAL_DISTANCE) / REAL_WIDTH
+        alpha_hegith = (height * REAL_DISTANCE) / REAL_HEIGHT
+        alpha_diagonal = (diagonal * REAL_DISTANCE) / REAL_DIAGONAL
+        self.alpha_mean = (alpha_width + alpha_hegith + alpha_diagonal) / 3
+
     # 두 포인트 사이의 거리를 반환
     def euclidean(self, p1, p2):
         return np.linalg.norm(p1 - p2)
@@ -48,27 +67,9 @@ class Calculator:
         return points
 
     def calculate_distance_angle(self, door, radian):
-        # INIT from blue3.jpg
-        init_p1 = np.array((1949, 613))
-        init_p2 = np.array((3045, 645))
-        init_p3 = np.array((1880, 2649))
-        init_p4 = np.array((2984, 2695))
-        points = [init_p1, init_p2, init_p3, init_p4]
-        # print("INIT Points : ", points)
-
-        height = self.calculate_height(points)
-        width = self.calculate_width(points)
-        diagonal = self.calculate_diagonal(points)
-
-        # get alpha
-        alpha_width = (width * REAL_DISTANCE) / REAL_WIDTH
-        alpha_hegith = (height * REAL_DISTANCE) / REAL_HEIGHT
-        alpha_diagonal = (diagonal * REAL_DISTANCE) / REAL_DIAGONAL
-        alpha_mean = (alpha_width + alpha_hegith + alpha_diagonal) / 3
-
         new_points = self.convert_points(door, radian)
         new_height = self.calculate_height(new_points)
-        distance = self.calculate_distance(alpha_mean, new_height, REAL_HEIGHT)
+        distance = self.calculate_distance(self.alpha_mean, new_height, REAL_HEIGHT)
 
         # 이미지에서의 중심점
         size_center = np.array((2016, 1512))
