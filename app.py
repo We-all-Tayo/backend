@@ -3,7 +3,7 @@ from flask_cors import CORS
 import tensorflow as tf
 from tensorflow.python.saved_model import tag_constants
 from view import create_endpoints
-from service import AngleDetection, BusArrive, Calculator, ColorDetection, DoorDetection, NumberDetection, Yolo, Utils
+from service import AngleDetection, BusArrive, Calculator, ColorDetection, DoorDetection, NumberDetection, RouteNumberDetection, Yolo, Utils
 
 class Services :
     pass
@@ -28,6 +28,7 @@ def create_app(test_config=None):
     services.color_detection = ColorDetection
     services.door_detection = DoorDetection
     services.number_detection = NumberDetection
+    services.route_number_detection = RouteNumberDetection
     services.yolo = Yolo
     services.utils = Utils
 

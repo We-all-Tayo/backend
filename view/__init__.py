@@ -38,7 +38,9 @@ def create_endpoints(app, services, infer):
                 if detected_color is not target_color:
                     return jsonify({'error': 'Unexpected color'})
             
-            if (same_color > 1 and services.number_detection.detect_number(image_path, target_bus, bus_leftup, bus_rightdown) == False):
+            plain_no = plain_no[-4:]
+            if same_color > 1 and (services.number_detection.detect_number(image_path, plain_no, bus_number_leftup, bus_number_rightdown) == False \
+                    and services.route_number_detection.detect_routenumber(image_path, target_bus,route_number_leftup, route_number_rightdown) == False):
                 return jsonify({'error': 'Unexpected number'})
             
             door = services.door_detection.detect_door(image_path, bus_leftup, bus_rightdown)
