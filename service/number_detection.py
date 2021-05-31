@@ -22,9 +22,9 @@ class NumberDetection:
             plate_cx, plate_cy = (rightdown[0] + leftup[0])/2, (rightdown[1] + leftup[1])/2
 
             croped_img= cv2.getRectSubPix(
-            image, 
-            patchSize=(int(plate_width), int(plate_height)), 
-            center=(int(plate_cx), int(plate_cy))
+                image, 
+                patchSize=(int(plate_width), int(plate_height)), 
+                center=(int(plate_cx), int(plate_cy))
             )
             gray = cv2.cvtColor(croped_img, cv2.COLOR_BGR2GRAY)
             img_blurred = cv2.GaussianBlur(gray, ksize=(5, 5), sigmaX=0)
@@ -39,9 +39,9 @@ class NumberDetection:
             )
 
             contours, _  = cv2.findContours(
-            img_thresh, 
-            mode=cv2.RETR_LIST, 
-            method=cv2.CHAIN_APPROX_SIMPLE
+                img_thresh, 
+                mode=cv2.RETR_LIST, 
+                method=cv2.CHAIN_APPROX_SIMPLE
             )
 
             contours_dict = []

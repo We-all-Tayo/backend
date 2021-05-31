@@ -21,16 +21,16 @@ def create_app(test_config=None):
     saved_model_loaded = tf.saved_model.load(app.config['MODEL_PATH'], tags=[tag_constants.SERVING])
     infer = saved_model_loaded.signatures["serving_default"]
 
-    services = Services
-    services.angle_detection = AngleDetection
+    services = Services()
+    services.angle_detection = AngleDetection()
     services.bus_arrive = BusArrive(app.config)
-    services.calculator = Calculator
-    services.color_detection = ColorDetection
-    services.door_detection = DoorDetection
-    services.number_detection = NumberDetection
-    services.route_number_detection = RouteNumberDetection
-    services.yolo = Yolo
-    services.utils = Utils
+    services.calculator = Calculator()
+    services.color_detection = ColorDetection()
+    services.door_detection = DoorDetection()
+    services.number_detection = NumberDetection()
+    services.route_number_detection = RouteNumberDetection()
+    services.yolo = Yolo()
+    services.utils = Utils()
 
     create_endpoints(app, services, infer)
 
