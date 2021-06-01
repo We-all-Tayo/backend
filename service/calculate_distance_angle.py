@@ -62,8 +62,8 @@ class Calculator:
         points = [p1, p2, p3, p4]
         width = self.calculate_width(points)
         
-        points[0][1] += math.tan(radian) * width
-        points[2][1] -= math.tan(radian) * width
+        points[0][1] += math.tan(np.pi/2 - radian) * width
+        points[2][1] -= math.tan(np.pi/2 - radian) * width
         
         return points
 
@@ -85,7 +85,6 @@ class Calculator:
         if size_center[0] > object_center[0]:
             mid_width *= -1
 
-        angle = math.atan(mid_width / distance)
+        angle = math.asin(mid_width / distance)
 
-        # print("distance: ", distance, " angle: ", angle)
         return distance, angle

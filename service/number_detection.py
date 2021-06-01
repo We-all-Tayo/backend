@@ -18,49 +18,49 @@ MAX_PLATE_RATIO = 3
 
 class NumberDetection:
     def preprocessing(self, image, leftup, rightdown):
-            plate_width, plate_height = rightdown[0] - leftup[0], rightdown[1] - leftup[1]
-            plate_cx, plate_cy = (rightdown[0] + leftup[0])/2, (rightdown[1] + leftup[1])/2
+        plate_width, plate_height = rightdown[0] - leftup[0], rightdown[1] - leftup[1]
+        plate_cx, plate_cy = (rightdown[0] + leftup[0])/2, (rightdown[1] + leftup[1])/2
 
-            croped_img= cv2.getRectSubPix(
-                image, 
-                patchSize=(int(plate_width), int(plate_height)), 
-                center=(int(plate_cx), int(plate_cy))
-            )
-            gray = cv2.cvtColor(croped_img, cv2.COLOR_BGR2GRAY)
-            img_blurred = cv2.GaussianBlur(gray, ksize=(5, 5), sigmaX=0)
+        croped_img= cv2.getRectSubPix(
+            image, 
+            patchSize=(int(plate_width), int(plate_height)), 
+            center=(int(plate_cx), int(plate_cy))
+        )
+        gray = cv2.cvtColor(croped_img, cv2.COLOR_BGR2GRAY)
+        img_blurred = cv2.GaussianBlur(gray, ksize=(5, 5), sigmaX=0)
 
-            img_thresh = cv2.adaptiveThreshold(
-                img_blurred, 
-                maxValue=255.0, 
-                adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                thresholdType=cv2.THRESH_BINARY_INV, 
-                blockSize=19, 
-                C=9
-            )
+        img_thresh = cv2.adaptiveThreshold(
+            img_blurred, 
+            maxValue=255.0, 
+            adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+            thresholdType=cv2.THRESH_BINARY_INV, 
+            blockSize=19, 
+            C=9
+        )
 
-            contours, _  = cv2.findContours(
-                img_thresh, 
-                mode=cv2.RETR_LIST, 
-                method=cv2.CHAIN_APPROX_SIMPLE
-            )
+        contours, _  = cv2.findContours(
+            img_thresh, 
+            mode=cv2.RETR_LIST, 
+            method=cv2.CHAIN_APPROX_SIMPLE
+        )
 
-            contours_dict = []
+        contours_dict = []
 
-            for contour in contours:
-                x, y, w, h = cv2.boundingRect(contour)
-                
-                # insert to dict
-                contours_dict.append({
-                    'contour': contour,
-                    'x': x,
-                    'y': y,
-                    'w': w,
-                    'h': h,
-                    'cx': x + (w / 2),
-                    'cy': y + (h / 2)
-                })
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            
+            # insert to dict
+            contours_dict.append({
+                'contour': contour,
+                'x': x,
+                'y': y,
+                'w': w,
+                'h': h,
+                'cx': x + (w / 2),
+                'cy': y + (h / 2)
+            })
 
-            return img_thresh, contours_dict
+        return img_thresh, contours_dict
 
     def find_chars(self, possible_contours, contour_list):
         matched_result_idx = []
@@ -116,28 +116,28 @@ class NumberDetection:
         return matched_result_idx
 
     def get_candidates(self, contours_dict):
-            possible_contours = []
+        possible_contours = []
 
-            cnt = 0
-            for d in contours_dict:
-                area = d['w'] * d['h']
-                ratio = d['w'] / d['h']
-                
-                if area > MIN_AREA \
-                and d['w'] > MIN_WIDTH and d['h'] > MIN_HEIGHT \
-                and MIN_RATIO < ratio < MAX_RATIO:
-                    d['idx'] = cnt
-                    cnt += 1
-                    possible_contours.append(d)
-
+        cnt = 0
+        for d in contours_dict:
+            area = d['w'] * d['h']
+            ratio = d['w'] / d['h']
             
-            result_idx = self.find_chars(possible_contours,possible_contours)
+            if area > MIN_AREA \
+            and d['w'] > MIN_WIDTH and d['h'] > MIN_HEIGHT \
+            and MIN_RATIO < ratio < MAX_RATIO:
+                d['idx'] = cnt
+                cnt += 1
+                possible_contours.append(d)
 
-            matched_result = []
-            for idx_list in result_idx:
-                matched_result.append(np.take(possible_contours, idx_list))
+        
+        result_idx = self.find_chars(possible_contours,possible_contours)
 
-            return matched_result
+        matched_result = []
+        for idx_list in result_idx:
+            matched_result.append(np.take(possible_contours, idx_list))
+
+        return matched_result
 
     def plate_images(self, matched_result, img_thresh, width, height):
         plate_imgs = []
