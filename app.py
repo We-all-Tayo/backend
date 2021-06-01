@@ -29,9 +29,9 @@ def create_app(test_config=None):
     services.door_detection = DoorDetection()
     services.number_detection = NumberDetection()
     services.route_number_detection = RouteNumberDetection()
-    services.yolo = Yolo()
+    services.yolo = Yolo(infer)
     services.utils = Utils()
 
-    create_endpoints(app, services, infer)
+    create_endpoints(app, services)
 
     return app

@@ -8,21 +8,31 @@ SCORE_THRESHOLD = 0.25
 INPUT_SIZE = 416
 
 class Yolo:
-    def yolo(self, infer, img_path):
+    def __init__(self, infer):
+        self.infer = infer
+
+    def yolo(self, img_path):
+        print('!!! start yolo')
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         height, width, channel = img.shape
 
+        print('!!! image is ready')
         img_input = cv2.resize(img, (INPUT_SIZE, INPUT_SIZE))
         img_input = img_input / 255.
         img_input = img_input[np.newaxis, ...].astype(np.float32)
         img_input = tf.constant(img_input)
 
-        pred_bbox = infer(img_input)
+        print('!!! input is ready')
+        pred_bbox = self.infer(img_input)
+
+        print('!!! infer is works')
 
         for key, value in pred_bbox.items():
             boxes = value[:, :, 0:4]
             pred_conf = value[:, :, 4:]
+
+        print('!!! got  bus boundaries')
 
         # boxes: 버스 테두리
         boxes, scores, classes, valid_detections = tf.image.combined_non_max_suppression(
@@ -34,6 +44,8 @@ class Yolo:
             iou_threshold=IOU_THRESHOLD,
             score_threshold=SCORE_THRESHOLD
         )
+
+        print('!!! TF is works')
 
         bus_place, bus_area = [], []
         door_place, door_area = [], []
@@ -60,10 +72,14 @@ class Yolo:
                     bus_number_place.append(bus_number)
                     bus_number_area.append((bus_number[3] - bus_number[1]) * (bus_number[2] - bus_number[0]))
 
+        print('!!! append success')
+
         bus_index = bus_area.index(max(bus_area))
         door_index = door_area.index(max(door_area))
         route_number_index = route_number_area.index(max(route_number_area))
         bus_number_index = bus_number_area.index(max(bus_number_area))
+
+        print('!!! calculations')
 
         # (y0, x0, y1, x1)
         bus_place[bus_index][0] *= height

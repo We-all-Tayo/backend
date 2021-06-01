@@ -4,7 +4,7 @@ from service import bus_arrive, number_detection
 from flask import request, jsonify
 import tensorflow as tf
 
-def create_endpoints(app, services, infer):
+def create_endpoints(app, services):
     @app.route('/')
     def index():
         return 'It\'s work!'
@@ -24,16 +24,16 @@ def create_endpoints(app, services, infer):
             image_data = base64.b64decode(image_bytes)
             with open(image_path, 'wb') as f:
                 f.write(image_data)
-            
+
             bus_dict = services.bus_arrive.get_bus_dict(bus_station)
             if target_bus not in bus_dict:
-                print('Target bus is not comming')
-                return jsonify({'error': 'Target bus is not comming'})
+                print('Target bus is not coming')
+                return jsonify({'error': 'Target bus is not coming'})
 
             target_color, plain_no = bus_dict[target_bus]
             same_color, diff_color = services.utils.count_bus(bus_dict, target_color)
             
-            bus_leftup, bus_rightdown, door_dict, route_number_leftup, route_number_rightdown, bus_number_leftup, bus_number_rightdown = services.yolo.yolo(infer, image_path)
+            bus_leftup, bus_rightdown, door_dict, route_number_leftup, route_number_rightdown, bus_number_leftup, bus_number_rightdown = services.yolo.yolo(image_path)
 
             if diff_color > 0:
                 detected_color = services.color_detection.detect_color(image_path, leftup=bus_leftup, rightdown=bus_rightdown)
