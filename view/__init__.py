@@ -1,8 +1,6 @@
 import numpy as np
 import base64
-from service import bus_arrive, number_detection
 from flask import request, jsonify
-import tensorflow as tf
 
 def create_endpoints(app, services):
     @app.route('/')
@@ -25,10 +23,22 @@ def create_endpoints(app, services):
             with open(image_path, 'wb') as f:
                 f.write(image_data)
 
+            #XXX For Test
+            image_path = '../project/input/bus4211.jpg'
+            
             bus_dict = services.bus_arrive.get_bus_dict(bus_station)
             if target_bus not in bus_dict:
                 print('Target bus is not coming')
-                return jsonify({'error': 'Target bus is not coming'})
+                #return jsonify({'error': 'Target bus is not coming'})
+            # 일단 API는 문제 없으니까 오고 있다고 가정하자.
+            
+            bus_dict = {
+                # 3번이 파란색
+                "370": ("3", None),
+                "7212": ("4", None),
+                "642": ("3", None),
+                "4211": ("4", "서울 74사 4226"),
+            }
 
             target_color, plain_no = bus_dict[target_bus]
             same_color, diff_color = services.utils.count_bus(bus_dict, target_color)

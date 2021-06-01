@@ -31,7 +31,7 @@
 ---
 
 ```bash
-$ pip3 install easydict imutils numpy==1.19.2 opencv-python pytesseract tensorflow==2.4.1 urllib3 flask flask_cors
+$ pip3 install easydict numpy==1.19.2 opencv-python pytesseract tensorflow==2.4.1 urllib3 flask flask_cors
 ```
 
 - [Google Tesseract OCR](https://github.com/tesseract-ocr/tesseract)

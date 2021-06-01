@@ -1,5 +1,4 @@
 #NOTE pip install urllib3
-import os
 from urllib.parse import urlencode, quote_plus
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
