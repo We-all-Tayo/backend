@@ -17,6 +17,7 @@ def create_endpoints(app, services, infer):
             bus_station = payload['station']
             image_bytes = payload['image']
             if (target_bus == '' or bus_station == '' or image_bytes == ''):
+                print('!!! No input data')
                 return jsonify({'error': 'No input data'})
 
             image_path = 'bus.jpg'
@@ -26,6 +27,7 @@ def create_endpoints(app, services, infer):
             
             bus_dict = services.bus_arrive.get_bus_dict(bus_station)
             if target_bus not in bus_dict:
+                print('Target bus is not comming')
                 return jsonify({'error': 'Target bus is not comming'})
 
             target_color, plain_no = bus_dict[target_bus]
@@ -36,11 +38,13 @@ def create_endpoints(app, services, infer):
             if diff_color > 0:
                 detected_color = services.color_detection.detect_color(image_path, leftup=bus_leftup, rightdown=bus_rightdown)
                 if detected_color is not target_color:
+                    print('Unexpected color')
                     return jsonify({'error': 'Unexpected color'})
             
             plain_no = plain_no[-4:]
             if same_color > 1 and (services.number_detection.detect_number(image_path, plain_no, bus_number_leftup, bus_number_rightdown) == False \
                     and services.route_number_detection.detect_routenumber(image_path, target_bus,route_number_leftup, route_number_rightdown) == False):
+                print('Unexpected number')
                 return jsonify({'error': 'Unexpected number'})
             
             door = services.door_detection.detect_door(image_path, bus_leftup, bus_rightdown)
@@ -77,9 +81,11 @@ def create_endpoints(app, services, infer):
             print(str(round(distance4 / 1000, 2)) + " meter")
             print(str(round(angle4 * 180 / np.pi)) + " 도")
 
+            print('it\'s work ― distance:', str(round(distance1/1000, 2)), ', angle:', str(round(angle1 * 100 / np.pi)))
             return jsonify({
                 'distance': str(round(distance1/1000, 2)),
                 'angle': str(round(angle1 * 100 / np.pi))
             })            
         except Exception as e:
+            print(str(e))
             return jsonify({'error': str(e)})
